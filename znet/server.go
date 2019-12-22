@@ -1,6 +1,7 @@
 package znet
 
 import (
+	"errors"
 	"fmt"
 	"net"
 
@@ -20,6 +21,17 @@ type Server struct {
 	Port int
 }
 
+// 定义当前客户端连接的所绑定handleAPI(目前这个额handle是写死的, 以后优化应该由用户自定义)
+func CallBackToClient(conn *net.TCPConn, data []byte, cnt int) error {
+	// 做一些回显功能
+	fmt.Println("[Conn Handle] CallbackToClient ...")
+	if _, err := conn.Write(data[:cnt]); err != nil {
+		fmt.Println("Write back buf err:", err)
+		return errors.New("CallBackToClient error")
+	}
+	return nil
+}
+
 // 启动服务器
 func (s *Server) Start() {
 	color.Cyan("[Start] Server Listener at [IP: %s, Port: %d] is starting\n", s.IP, s.Port)
@@ -37,33 +49,23 @@ func (s *Server) Start() {
 			return
 		}
 		color.Cyan("Start Zinx server %s success, Listening...\n", s.Name)
+		var cid uint32
+		cid = 0
+
 		// 3. 阻塞等待客户端连接, 处理客户端连接业务(读写)
 		for {
-			conn, err := listener.Accept()
+			conn, err := listener.AcceptTCP()
 			if err != nil {
 				color.Red("Accept error:", err)
 				continue
 			}
 
-			// 已经与客户端建立连接, 做一些业务, 做一个最基本的512字节长度的回显业务
-			go func() {
-				for {
-					buf := make([]byte, 512)
-					cnt, err := conn.Read(buf)
-					if err != nil {
-						color.Red("recv buf error: ", err)
-						continue
-					}
+			// 将处理新连接业务方法和conn进行绑定, 得到我们的连接模块对象
+			dealConn := NewConnection(conn, cid, CallBackToClient)
+			cid++
 
-					color.Green("recv client buf %s, cnt %d\n", buf, cnt)
-
-					// 回显功能
-					if _, err := conn.Write(buf[:cnt]); err != nil {
-						color.Red("write back buf err:", err)
-						continue
-					}
-				}
-			}()
+			// 启动当前的连接业务处理
+			go dealConn.Start()
 		}
 	}()
 }
