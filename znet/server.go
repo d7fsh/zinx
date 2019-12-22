@@ -55,6 +55,8 @@ func (s *Server) Start() {
 						continue
 					}
 
+					color.Green("recv client buf %s, cnt %d\n", buf, cnt)
+
 					// 回显功能
 					if _, err := conn.Write(buf[:cnt]); err != nil {
 						color.Red("write back buf err:", err)
