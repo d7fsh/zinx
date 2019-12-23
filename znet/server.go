@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/fatih/color"
+	"zinx_demo/utils"
 	"zinx_demo/ziface"
 )
 
@@ -24,7 +25,13 @@ type Server struct {
 
 // 启动服务器
 func (s *Server) Start() {
-	color.Cyan("[Start] Server Listener at [IP: %s, Port: %d] is starting\n", s.IP, s.Port)
+	color.Cyan("[Zinx] ServerName: %s, listener at IP: %s, port: %d is starting",
+		s.Name,
+		s.IP,
+		s.Port,
+	)
+	color.Cyan("[Zinx] Version %s, MaxConn: %d, MaxPackageSize: %d", utils.GlobalObject.Version, utils.GlobalObject.MaxConn, utils.GlobalObject.MaxPackageSize)
+
 	go func() {
 		// 1. 获取一个TCP的Addr
 		addr, err := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%d", s.IP, s.Port))
@@ -86,11 +93,12 @@ func (s *Server) AddRouter(router ziface.IRouter) {
 初始化Server模块的方法
 */
 func NewServer(name string) ziface.IServer {
+
 	s := &Server{
-		Name:      name,
+		Name:      utils.GlobalObject.Name,
 		IPVersion: "tcp4",
-		IP:        "0.0.0.0",
-		Port:      8999,
+		IP:        utils.GlobalObject.Host,
+		Port:      utils.GlobalObject.TcpPort,
 		Router:    nil,
 	}
 	return s
