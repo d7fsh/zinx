@@ -19,9 +19,11 @@ type GlobalObj struct {
 	Host      string         `json:"host"` // 当前服务器主机监听的IP
 	TcpPort   int            `json:"port"` // 当前服务器主机监听的端口号
 	// Zinx配置
-	Version        string // 当前zinx的版本号
-	MaxConn        int    `json:"max_conn"` // 当前服务器主机允许最大连接数
-	MaxPackageSize uint32 // 当前zinx框架数据包的最大值
+	Version           string // 当前zinx的版本号
+	MaxConn           int    `json:"max_conn"` // 当前服务器主机允许最大连接数
+	MaxPackageSize    uint32 // 当前zinx框架数据包的最大值
+	WorkerPoolSize    uint32 `json:"worker_pool_size"`     // 当前业务工作WorkerPool的goroutine数量
+	MaxWorkerTaskSize uint32 `json:"max_worker_task_size"` // zinx框架允许用户最多开辟多少个Worker(限定条件)
 }
 
 /*
@@ -46,13 +48,15 @@ func (g *GlobalObj) Reload() {
 func init() {
 	// 如果配置文件没有加载, 默认值
 	GlobalObject = &GlobalObj{
-		Name:           "ZinxServerApp",
-		TcpServer:      nil,
-		Host:           "0.0.0.0",
-		TcpPort:        8999,
-		Version:        "V0.4",
-		MaxConn:        100,
-		MaxPackageSize: 4096,
+		Name:              "ZinxServerApp",
+		TcpServer:         nil,
+		Host:              "0.0.0.0",
+		TcpPort:           8999,
+		Version:           "V0.4",
+		MaxConn:           100,
+		MaxPackageSize:    4096,
+		WorkerPoolSize:    10,
+		MaxWorkerTaskSize: 1000,
 	}
 
 	// 应该尝试从conf/zinx.json中加载用户自定义配置

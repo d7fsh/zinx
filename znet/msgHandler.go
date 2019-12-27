@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 
+	"zinx_demo/utils"
 	"zinx_demo/ziface"
 )
 
@@ -14,11 +15,19 @@ import (
 type MsgHandle struct {
 	// 存放每个MsgID所对应的处理方法
 	Apis map[uint32]ziface.IRouter
+	// 业务工作WorkerPool的worker数量
+	TaskQueue []chan ziface.IRequest
+	// 负责Worker读取任务的消息队列
+	WorkerPoolSize uint32
 }
 
 // 初始化/创建MsgHandle的方法
 func NewMsgHandle() *MsgHandle {
-	return &MsgHandle{Apis: make(map[uint32]ziface.IRouter)}
+	return &MsgHandle{
+		Apis:           make(map[uint32]ziface.IRouter),
+		WorkerPoolSize: utils.GlobalObject.WorkerPoolSize, // 从全局配置中获取
+		TaskQueue:      make([]chan ziface.IRequest, utils.GlobalObject.MaxWorkerTaskSize),
+	}
 }
 
 // 调度/执行对应的Router消息处理方法
