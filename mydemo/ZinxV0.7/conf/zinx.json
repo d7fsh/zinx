@@ -1,0 +1,6 @@
+{
+  "name": "ZinxV0.6 Pack Test Demo",
+  "host": "0.0.0.0",
+  "port": 8999,
+  "max_conn": 30
+}
