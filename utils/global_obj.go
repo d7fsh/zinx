@@ -55,8 +55,8 @@ func init() {
 		Version:           "V0.4",
 		MaxConn:           100,
 		MaxPackageSize:    4096,
-		WorkerPoolSize:    10,
-		MaxWorkerTaskSize: 1000,
+		WorkerPoolSize:    10,   // Worker工作池的队列的个数
+		MaxWorkerTaskSize: 1000, // 每个Worker对应的消息队列的任务的数量最大值
 	}
 
 	// 应该尝试从conf/zinx.json中加载用户自定义配置
