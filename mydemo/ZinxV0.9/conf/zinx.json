@@ -1,0 +1,8 @@
+{
+  "name": "[Zinx V0.9] Pack Test Demo",
+  "host": "0.0.0.0",
+  "port": 8999,
+  "max_conn": 3,
+  "worker_pool_size": 10,
+  "max_worker_task_size": 1000
+}

@@ -81,6 +81,7 @@ func (s *Server) Start() {
 			// 设置最大连接个数的判断, 如果超过最大连接的数量, 那么则关闭此连接
 			if s.ConnMan.Len() >= utils.GlobalObject.MaxConn {
 				// TODO 给客户端响应一个错误超出最大连接的错误包
+				color.Red("Too Many Connections Max Conn = %d\n", utils.GlobalObject.MaxConn)
 				conn.Close()
 				continue
 			}
