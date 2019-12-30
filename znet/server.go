@@ -86,7 +86,7 @@ func (s *Server) Start() {
 			}
 
 			// 将处理新连接业务方法和conn进行绑定, 得到我们的连接模块对象
-			dealConn := NewConnection(conn, cid, s.MsgHandler)
+			dealConn := NewConnection(s, conn, cid, s.MsgHandler)
 			cid++
 
 			// 启动当前的连接业务处理
@@ -117,4 +117,8 @@ func (s *Server) Serve() {
 func (s *Server) AddRouter(msgID uint32, router ziface.IRouter) {
 	s.MsgHandler.AddRouter(msgID, router)
 	fmt.Println("Add Router Success.")
+}
+
+func (s *Server) GetConnManager() ziface.IConnManager {
+	return s.ConnMan
 }

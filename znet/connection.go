@@ -13,6 +13,8 @@ import (
 
 // 链接模块
 type Connection struct {
+	// 当前Conn隶属于那个Server
+	TcpServer ziface.IServer
 	// 当前连接的socket TCP套接字
 	Conn *net.TCPConn
 	// 连接ID
@@ -28,8 +30,10 @@ type Connection struct {
 }
 
 // 初始化连接模块的方法
-func NewConnection(conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandler) *Connection {
+func NewConnection(server ziface.IServer, conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandler) *Connection {
+
 	c := &Connection{
+		TcpServer:  server,
 		Conn:       conn,
 		ConnID:     connID,
 		isClosed:   false,
@@ -37,6 +41,10 @@ func NewConnection(conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandl
 		msgChan:    make(chan []byte),
 		MsgHandler: msgHandler,
 	}
+
+	// 将conn加入到ConnManager中
+	c.TcpServer.GetConnManager().Add(c)
+
 	return c
 }
 
@@ -151,6 +159,9 @@ func (c *Connection) Stop() {
 
 	// 告知Writer关闭
 	c.ExitChan <- true
+
+	// 将当前连接从connManager中摘除掉
+	c.TcpServer.GetConnManager().Remove(c)
 
 	close(c.ExitChan)
 	close(c.msgChan)
