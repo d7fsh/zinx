@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/fatih/color"
 	"zinx_demo/ziface"
 	"zinx_demo/znet"
 )
@@ -44,14 +45,34 @@ func (p *HelloRouter) Handle(req ziface.IRequest) {
 	}
 }
 
+// 创建连接之后执行的钩子函数
+func DoConnectionBegin(conn ziface.IConnection) {
+	color.Green("-----> DoConnectionBegin is Called...\n")
+	if err := conn.SendMsg(202, []byte("DoConnectionBegin.....")); err != nil {
+		color.Red("%v\n", err)
+	}
+}
+
+// 断开连接之前需要执行的函数
+func DoConnectionLost(conn ziface.IConnection) {
+	color.Yellow("-----> DoConnectionLost is Called...\n")
+	color.Yellow("conn ID = %d\n", conn.GetConnID())
+}
+
 func main() {
 	// 1. 创建一个server句柄, 使用zinx的api
 	s := znet.NewServer()
-	// 2. 给当前zinx框架添加一个自定义的router
+
+	// 2. 注册连接的hookFunc
+	s.SetOnConnStart(DoConnectionBegin)
+	s.SetOnConnStop(DoConnectionLost)
+
+	// 3. 给当前zinx框架添加一个自定义的router
 	s.AddRouter(0, &PingRouter{})
 	s.AddRouter(1, &HelloRouter{})
 	s.AddRouter(2, &HelloRouter{})
 	s.AddRouter(3, &HelloRouter{})
-	// 2, 启动server
+
+	// 4. 启动server
 	s.Serve()
 }
