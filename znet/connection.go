@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"sync"
 
 	"github.com/fatih/color"
 	"zinx_demo/utils"
@@ -27,6 +28,11 @@ type Connection struct {
 	msgChan chan []byte
 	// 消息的管理MsgID和对应的处理业务API关系
 	MsgHandler ziface.IMsgHandler
+
+	// 链接属性集合
+	property map[string]interface{}
+	// 保护连接属性的修改的锁
+	propertyLock sync.RWMutex
 }
 
 // 初始化连接模块的方法
@@ -190,4 +196,34 @@ func (c *Connection) GetConnID() uint32 {
 func (c *Connection) RemoteAddr() net.Addr {
 
 	return c.Conn.RemoteAddr()
+}
+
+// 设置连接属性
+func (c *Connection) SetProperty(key string, value interface{}) {
+	c.propertyLock.Lock()
+	defer c.propertyLock.Unlock()
+
+	// 添加一个连接属性
+	c.property[key] = value
+}
+
+// 获取链接属性
+func (c *Connection) GetProperty(key string) (interface{}, error) {
+	c.propertyLock.RLock()
+	defer c.propertyLock.RUnlock()
+
+	if v, ok := c.property[key]; ok {
+		return v, nil
+	} else {
+		return nil, errors.New("no property found")
+	}
+}
+
+// 移除连接属性
+func (c *Connection) RemoveProperty(key string) {
+	c.propertyLock.Lock()
+	defer c.propertyLock.Unlock()
+
+	// 删除属性
+	delete(c.property, key)
 }
