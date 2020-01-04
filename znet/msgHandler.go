@@ -5,9 +5,9 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/d7fsh/zinx/utils"
+	"github.com/d7fsh/zinx/ziface"
 	"github.com/fatih/color"
-	"zinx_demo/utils"
-	"zinx_demo/ziface"
 )
 
 /*

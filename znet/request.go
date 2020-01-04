@@ -1,6 +1,6 @@
 package znet
 
-import "zinx_demo/ziface"
+import "github.com/d7fsh/zinx/ziface"
 
 type Request struct {
 	// 已经和客户端建立好的连接

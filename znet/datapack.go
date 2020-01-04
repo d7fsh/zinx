@@ -5,8 +5,8 @@ import (
 	"encoding/binary"
 	"errors"
 
-	"zinx_demo/utils"
-	"zinx_demo/ziface"
+	"github.com/d7fsh/zinx/utils"
+	"github.com/d7fsh/zinx/ziface"
 )
 
 /*

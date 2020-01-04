@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"zinx_demo/ziface"
+	"github.com/d7fsh/zinx/ziface"
 )
 
 /*

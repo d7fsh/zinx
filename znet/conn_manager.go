@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/fatih/color"
-	"zinx_demo/ziface"
+	"github.com/d7fsh/zinx/ziface"
 )
 
 // 连接管理模块
